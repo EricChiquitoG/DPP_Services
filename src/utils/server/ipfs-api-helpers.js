@@ -3,7 +3,7 @@ import axios from 'axios'
 export async function fetchDataFromIPFS(cid) {
   try {
     const response = await axios.request({
-      url: 'http://35.178.146.101:80/retrieveData',
+      url: 'http://16.171.23.19:80/retrieveData',
       method: 'get',
       data: { CID: cid }, // Sending body with GET request
       headers: { 'Content-Type': 'application/json' },
@@ -19,7 +19,7 @@ export async function fetchDataFromIPFS(cid) {
 export async function fetchEventsFromIPFS(publicKey, eventType) {
   try {
     const response = await axios.request({
-      url: 'http://35.178.146.101:80/retrieveEvent',
+      url: 'http://16.171.23.19:80/retrieveEvent',
       method: 'get',
       data: { Key: publicKey, Type: eventType }, // "AllEvents" or "LastEvent"
       headers: { 'Content-Type': 'application/json' },
@@ -35,7 +35,7 @@ export async function fetchEventsFromIPFS(publicKey, eventType) {
 export async function addEventToIPFS(Key, Eventtype, Datetime, Data) {
   try {
     const response = await axios.post(
-      'http://35.178.146.101:80/addEvent',
+      'http://16.171.23.19:80/addEvent',
       {
         Key,
         Eventtype,
