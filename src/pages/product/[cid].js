@@ -21,6 +21,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 export async function getServerSideProps(context) {
   const session = await getSession(context)
   const { cid } = context.params
+  console.log("does it work?")
 
   try {
     const productData = await fetchDataFromIPFS(cid)
