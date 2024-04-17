@@ -66,7 +66,7 @@ export async function getServerSideProps(context) {
     } */
 
     // Return all fetched data
-    console.log(session.user.role)
+    //console.log(session.user.role)
     return {
       props: {
         product: {
