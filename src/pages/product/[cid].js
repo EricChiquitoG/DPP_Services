@@ -123,7 +123,7 @@ function ProductDetails({ product }) {
         <a
           href='#'
           onClick={() => reloadPageWithCID(item.CID)}
-          className='text-blue-300 hover:underline'
+          className='text-blue-500 hover:underline'
         >
           {item.CID}
         </a>

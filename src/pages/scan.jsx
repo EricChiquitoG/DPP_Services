@@ -21,12 +21,12 @@ export default function Scanner() {
   const handleDecode = result => {
     try {
       const obj = JSON.parse(result) // Assuming result is a JSON string
-      const oid = obj.CID // Extract the oid
+      const cid = obj.CID // Extract the oid
       console.log(obj)
       //console.log(typeof result)
       //const oid = true
-      if (oid) {
-        router.push(`/product/${oid}`) // Navigate to the specific product page
+      if (cid) {
+        router.push(`/product/${cid}`) // Navigate to the specific product page
       } else {
         console.error('OID not found in the scanned result')
       }
