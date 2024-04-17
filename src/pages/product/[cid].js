@@ -12,9 +12,11 @@ import {
   fetchEventsFromIPFS,
 } from '@/utils/server/ipfs-api-helpers'
 import { getSession, useSession } from 'next-auth/react'
-import KeyDocument from '@/models/KeyDocument'
+//import KeyDocument from '@/models/KeyDocument'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
+
+
 
 export async function getServerSideProps(context) {
   const session = await getSession(context)
@@ -26,7 +28,7 @@ export async function getServerSideProps(context) {
     let remanEvents = null
     let shippingEvents = null
 
-    if (
+/*     if (
       session &&
       (session.user.role === 'Contributor' || session.user.isAdmin)
     ) {
@@ -60,13 +62,15 @@ export async function getServerSideProps(context) {
       }
 
       console.log('Events:', { remanEvents, shippingEvents })
-    }
+    } */
 
     // Return all fetched data
+    console.log(session.user.role)
     return {
       props: {
         product: {
           ...productData,
+          cid,
           remanEvents,
           shippingEvents,
         },
@@ -78,10 +82,12 @@ export async function getServerSideProps(context) {
   }
 }
 
+
+
 function ProductDetails({ product }) {
   const { data: session, status } = useSession()
   const loading = status === 'loading'
-
+  const router = useRouter();
   const [eventCategory, setEventCategory] = useState('remanufacturing') // default to 'remanufacturing'
   const [eventDate, setEventDate] = useState(new Date())
   const [eventType, setEventType] = useState('')
@@ -107,6 +113,54 @@ function ProductDetails({ product }) {
     console.log()
     if (error) setError('')
   }
+  const renderMadeFrom = () => {
+    return product.made_from.map((item, index) => (
+      <div key={index} className='px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
+        <dt className='text-sm font-medium leading-6 text-gray-900'>
+          CID:
+        </dt>
+        <dd className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0'>
+        <a
+          href='#'
+          onClick={() => reloadPageWithCID(item.CID)}
+          className='text-blue-300 hover:underline'
+        >
+          {item.CID}
+        </a>
+        </dd>
+        <dt className='text-sm font-medium leading-6 text-gray-900'>Product Type:</dt>
+        <dd className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0'>{item.ProductType}</dd>
+      </div>
+    ))
+  }
+
+  const renderMakes = () => {
+    return product.makes.map((item, index) => (
+      <div key={index} className='px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
+        <dt className='text-sm font-medium leading-6 text-gray-900'>
+          CID:
+          </dt>
+        <dd className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0'>
+          <a
+          href='#'
+          onClick={() => reloadPageWithCID(item.CID)}
+          className='text-blue-500 hover:underline'
+        >
+          {item.CID}
+        </a>
+       </dd>
+        <dt className='text-sm font-medium leading-6 text-gray-900'>Product Type:</dt>
+        <dd className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0'>{item.ProductType}</dd>
+      </div>
+    ))
+  }
+  const reloadPageWithCID = (cid) => {
+    router.push(`/product/${cid}`)
+  }
+
+
+
+  
 
   const handleSubmit = async e => {
     e.preventDefault() // Don't forget to prevent default form submission
@@ -140,6 +194,9 @@ function ProductDetails({ product }) {
     }
   }
   console.log('heres the goddamn product', product)
+
+  const excludedFields = ['made_from', 'makes', 'remanufacturing_events', 'shipping', 'cid', 'remanEvents','shippingEvents'];
+
 
   return (
     <LayoutGlobal>
@@ -220,7 +277,7 @@ function ProductDetails({ product }) {
           <div className='p-8'>
             <div className='flex flex-col space-y-2 px-4 sm:px-0'>
               <h3 className='text-4xl font-semibold leading-7 text-gray-900'>
-                {product.ProductName}
+                DPP Traversal System PoC
               </h3>
               <p className='mt-1 max-w-2xl text-sm leading-6 text-gray-500'>
                 CID: {product.cid}
@@ -228,7 +285,7 @@ function ProductDetails({ product }) {
             </div>
             <div className='mt-6 border-t border-gray-100'>
               <dl className='divide-y divide-gray-100'>
-                <div className='px-4 py-6 text-sm sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
+                {/* <div className='px-4 py-3 text-sm sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
                   <dt className=' font-medium leading-6 text-gray-900'>
                     Product Type:
                   </dt>
@@ -236,7 +293,7 @@ function ProductDetails({ product }) {
                     {product.ProductType}
                   </dd>
                 </div>
-                <div className='px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
+                <div className='px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
                   <dt className='text-sm font-medium leading-6 text-gray-900'>
                     Creation time:
                   </dt>
@@ -244,7 +301,7 @@ function ProductDetails({ product }) {
                     {formatDate(product.Entrydate)}
                   </dd>
                 </div>
-                <div className='px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
+                <div className='px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
                   <dt className='text-sm font-medium leading-6 text-gray-900'>
                     Plant:
                   </dt>
@@ -252,7 +309,7 @@ function ProductDetails({ product }) {
                     {product.Plant}
                   </dd>
                 </div>
-                <div className='px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
+                <div className='px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
                   <dt className='text-sm font-medium leading-6 text-gray-900'>
                     Material ID:
                   </dt>
@@ -260,7 +317,7 @@ function ProductDetails({ product }) {
                     {product.MaterialId}
                   </dd>
                 </div>
-                <div className='px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
+                <div className='px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
                   <dt className='text-sm font-medium leading-6 text-gray-900'>
                     Order ID:
                   </dt>
@@ -268,7 +325,7 @@ function ProductDetails({ product }) {
                     {product.OrderId}
                   </dd>
                 </div>
-                <div className='px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
+                <div className='px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
                   <dt className='text-sm font-medium leading-6 text-gray-900'>
                     <span>Dimensions</span>{' '}
                     <span className='text-xs font-semibold text-gray-300'>
@@ -279,7 +336,55 @@ function ProductDetails({ product }) {
                   <dd className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0'>
                     {formatDimensions(product.Dimensions)}
                   </dd>
+                </div> */}
+                <div className='mt-6 border-t border-gray-100'>
+                <dl className='divide-y divide-gray-100'>
+                  {Object.keys(product).map((key, index) => (
+                    !excludedFields.includes(key) && (
+                      <div key={index} className='px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
+                        {key === 'Data' && session && session.user.role === 'Contributor' && (
+                          <>
+                            <dt className='text-sm font-medium leading-6 text-gray-900'>{key}:</dt>
+                            <dd className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0'>
+                              {typeof product[key] === 'string' ? product[key] : JSON.stringify(product[key])}
+                            </dd>
+                          </>
+                        )}
+                        {key !== 'Data' && (
+                          <>
+                            <dt className='text-sm font-medium leading-6 text-gray-900'>{key}:</dt>
+                            <dd className='mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0'>
+                              {typeof product[key] === 'string' ? product[key] : JSON.stringify(product[key])}
+                            </dd>
+                          </>
+                        )}
+                      </div>
+                    )
+                  ))}
+                </dl>
+              </div>
+              {product.made_from && (
+                <div className='mt-6 border-t border-gray-100'>
+                <h3 className='text-3xl font-semibold leading-8 text-gray-800 mt-6 mb-4'>
+                  Made From:
+                </h3>
+                  <dl className='divide-y divide-gray-100'>
+                    {renderMadeFrom()}
+                    {/* Add more fields as needed */}
+                  </dl>
                 </div>
+                )}
+              {product.makes && (
+              <div className='mt-6 border-t border-gray-100'>
+                <h3 className='text-3xl font-semibold leading-8 text-gray-800 mt-6 mb-4'>
+                  Makes
+                </h3>
+                <dl className='divide-y divide-gray-100'>
+                  {renderMakes()}
+                  {/* Add more fields as needed */}
+                </dl>
+              </div>
+              )}
 
                 <div className='flex flex-col space-y-4 divide-y divide-gray-100'>
                   {product.remanEvents && (
